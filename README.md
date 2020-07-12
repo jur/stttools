@@ -38,3 +38,9 @@ The script *calcbestshuttlemissions.py* calculates the best missions and the bes
 ## Problems
 When the mission requires *command* **OR** *science*, it will only check the **first skill**; i.e. in this example *command*.
 When the mission requires *commmand* **AND** *science*, it will check **both**. The missions with **AND** are normally better, so the bug for **OR** normally does not matter.
+
+# genwgetfromhar.js
+This script replays network traffic and should only be used when you understand it.
+Description is inside the source code. It can be used to get the player.json
+without doing the above steps, but you need to save the HAR file in the
+chrome dev tools.
