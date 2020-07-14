@@ -21,7 +21,8 @@ var fs = require('fs');
 var harfile = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 
 var num = 0;
-for (let entry of harfile.log.entries) {
+var entry;
+for (entry of harfile.log.entries) {
 	if (entry.request.url.includes('https://stt.disruptorbeam.com')) {
 		if (entry.response.content.mimeType !== 'application/json') {
 			// Only repeat when there was a JSON result in the original log.
@@ -31,8 +32,9 @@ for (let entry of harfile.log.entries) {
 		console.log('PARAMS+=("-O")');
 		var jsonfilename = 'response' + num + '.json';
 		console.log('PARAMS+=("' + jsonfilename + '")');
-		for (let header of entry.request.headers) {
-			if ((header.name.charAt(0) !== ':') && (header.name !== 'content-length')) {
+		var header;
+		for (header of entry.request.headers) {
+			if ((header.name.charAt(0) !== ':') && (header.name.toLowerCase() !== 'content-length')) {
 				var value = header.value;
 
 				value = value.replace(/\\/g, "\\\\");
@@ -43,12 +45,14 @@ for (let entry of harfile.log.entries) {
 		}
 		console.log("# method " + entry.request.method);
 		if (entry.request.method === 'POST') {
-			var text = entry.request.postData.text;
+			if (entry.request.postData) {
+				var text = entry.request.postData.text;
 
-			console.log("IFS= read -r -d '' POSTDATA <<EOF");
-			console.log(text);
-			console.log('EOF');
-			console.log('PARAMS+=("--post-data=${POSTDATA}")');
+				console.log("IFS= read -r -d '' POSTDATA <<EOF");
+				console.log(text);
+				console.log('EOF');
+				console.log('PARAMS+=("--post-data=${POSTDATA}")');
+			}
 		}
 		console.log('PARAMS+=("' + entry.request.url + '")');
 		console.log('wget "${PARAMS[@]}"');
