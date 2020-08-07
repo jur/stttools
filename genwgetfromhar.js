@@ -3,27 +3,52 @@
 //
 // This script can be executed with node.js as follows:
 //
-// node genwgetfromhar.js stt.disruptorbeam.com.har >bashscript.sh
+// node genwgetfromhar.js stt.disruptorbeam.com.har "https://stt.disruptorbeam.com"
 //
-// bash bashscript.sh
+// bash stt.disruptorbeam.com.sh
 //
 // First parameter is a path to a har file.
+// A bash script will be written (file extension .har will be replaced by .sh)
 // har files can be saved in google chrome dev tool (SHIFT + CTRL + J) in
 // context menu under network.
-// This prints a bash script which can be executed to repeat the https requests.
+// This creates a bash script which can be executed to repeat the https requests.
 // For example for getting player.json.
+// The original response will be also extracted from har file and written to
+// response*.json files.
 // When you have done an action (for example scan, warp or buy something) it will
 // also be repeated, so be careful what you repeat.
-console.log('#!/bin/bash');
-console.log('# Created from ' + process.argv[2]);
+
+var host = "https://stt.disruptorbeam.com"
+
+if (process.argv[3]) {
+	host = process.argv[3];
+}
 
 var fs = require('fs');
+
+var harfilename = process.argv[2]
+var bashfilename = harfilename.replace(/.har$/,".sh")
+
+console.log(bashfilename)
+
+if (harfilename !== bashfilename) {
+	var util = require('util');
+	var logFile = fs.createWriteStream(bashfilename, { flags: 'a' })
+
+	console.log = function () {
+		logFile.write(util.format.apply(null, arguments) + '\n');
+	}
+}
+
 var harfile = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+
+console.log('#!/bin/bash');
+console.log('# Created from ' + process.argv[2]);
 
 var num = 0;
 var entry;
 for (entry of harfile.log.entries) {
-	if (entry.request.url.includes('https://stt.disruptorbeam.com')) {
+	if (entry.request.url.includes(host)) {
 		if (entry.response.content.mimeType !== 'application/json') {
 			// Only repeat when there was a JSON result in the original log.
 			continue;
@@ -43,6 +68,12 @@ for (entry of harfile.log.entries) {
 				console.log('PARAMS+=("--header=' + header.name + ': ' + value + '")');
 			}
 		}
+		fs.writeFile(jsonfilename, entry.response.content.text, function (err, data) {
+			if (err) {
+				console.log(err);
+			}
+			// console.log(data);
+		});
 		console.log("# method " + entry.request.method);
 		if (entry.request.method === 'POST') {
 			if (entry.request.postData) {
