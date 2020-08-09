@@ -18,10 +18,14 @@
 // When you have done an action (for example scan, warp or buy something) it will
 // also be repeated, so be careful what you repeat.
 
-var host = "https://stt.disruptorbeam.com"
+var host = "https://stt.disruptorbeam.com";
+var mimetype = 'application/json';
 
 if (process.argv[3]) {
 	host = process.argv[3];
+}
+if (process.argv[4]) {
+	mimetype = process.argv[4];
 }
 
 var fs = require('fs');
@@ -49,7 +53,7 @@ var num = 0;
 var entry;
 for (entry of harfile.log.entries) {
 	if (entry.request.url.includes(host)) {
-		if (entry.response.content.mimeType !== 'application/json') {
+		if (entry.response.content.mimeType !== mimetype) {
 			// Only repeat when there was a JSON result in the original log.
 			continue;
 		}
@@ -68,12 +72,14 @@ for (entry of harfile.log.entries) {
 				console.log('PARAMS+=("--header=' + header.name + ': ' + value + '")');
 			}
 		}
-		fs.writeFile(jsonfilename, entry.response.content.text, function (err, data) {
-			if (err) {
-				console.log(err);
-			}
-			// console.log(data);
-		});
+		if (entry.response.content.text) {
+			fs.writeFile(jsonfilename, entry.response.content.text, function (err, data) {
+				if (err) {
+					console.log(err);
+				}
+				// console.log(data);
+			});
+		}
 		console.log("# method " + entry.request.method);
 		if (entry.request.method === 'POST') {
 			if (entry.request.postData) {
