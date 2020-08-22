@@ -44,3 +44,13 @@ This script replays network traffic and should only be used when you understand 
 Description is inside the source code. It can be used to get the player.json
 without doing the above steps, but you need to save the HAR file in the
 chrome dev tools.
+
+# stt-chrome-ctrl
+The script in stt-chrome-ctrl/stt-chrome-ctrl.sh can automatically get the
+player.json.
+It runs chromium via nodejs and logins via Facebook; i.e. the web browser is
+controlled by the script. You need to enter the facebook login credentials.
+These are saved in ${HOME}/.facebook-secret.json.
+Parameters are passed to chromium (for example --no-sandbox).
+When the game is loaded, you can close the chromium browser which was started.
+The script is optimised for debian.

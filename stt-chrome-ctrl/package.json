@@ -1,0 +1,17 @@
+{
+  "name": "stt-chrome-ctrl",
+  "version": "1.0.0",
+  "description": "Control stt via google chrome",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "atob": "^2.1.2",
+    "btoa": "^1.2.1",
+    "prettier": "^2.0.5",
+    "puppeteer": "^5.2.1"
+  }
+}
