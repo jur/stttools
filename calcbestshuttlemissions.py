@@ -189,7 +189,7 @@ def calc_skill_combos(skills):
 			if skill1 != skill2:
 				skill = skill1 + ',' + skill2
 				skills[skill] = {}
-				skills[skill]['value'] = skills[skill1]['value'] + skills[skill2]['value']
+				skills[skill]['value'] = skills[skill1]['value'] + skills[skill2]['value']/4
 
 def get_special_crew_bonus(crew, value):
 	if value > 0:
