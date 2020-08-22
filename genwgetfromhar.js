@@ -72,7 +72,7 @@ for (entry of harfile.log.entries) {
 				console.log('PARAMS+=("--header=' + header.name + ': ' + value + '")');
 			}
 		}
-		if (entry.response.content.text) {
+		if (entry.response.content.text!==undefined) {
 			fs.writeFile(jsonfilename, entry.response.content.text, function (err, data) {
 				if (err) {
 					console.log(err);
@@ -92,7 +92,7 @@ for (entry of harfile.log.entries) {
 			}
 		}
 		console.log('PARAMS+=("' + entry.request.url + '")');
-		console.log('wget "${PARAMS[@]}"');
+		console.log('wget "${PARAMS[@]}" || exit 1');
 		console.log('unset PARAMS');
 		console.log('jq "." "' + jsonfilename + '"');
 		console.log('');
