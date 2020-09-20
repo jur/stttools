@@ -50,6 +50,9 @@ The script in stt-chrome-ctrl/stt-chrome-ctrl.sh can automatically get the
 player.json.
 It runs chromium via nodejs and logins via Facebook; i.e. the web browser is
 controlled by the script. You need to enter the facebook login credentials.
+The script tries to start the installed google chrome browser with debugging
+enabled. When the browser is running it runs the chromium browser included in
+puppeteer.
 These are saved in ${HOME}/.facebook-secret.json.
 Parameters are passed to chromium (for example --no-sandbox).
 When the game is loaded, you can close the chromium browser which was started.

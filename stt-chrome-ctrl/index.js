@@ -42,6 +42,10 @@ function modify_json(data) {
       // disable annoying offer popup:
       data.player.environment.force_offer_popup_at_login = false;
       data.player.environment.limited_time_offers_v2.enabled = false;
+      data.player.environment.limited_time_offers_v2.force_popup_at_login = false;
+
+      // Use new event panel
+      data.player.environment.use_events_v2_event_hub = true;
 
       //data.player.environment.use_v2_activities_panel = false;
       //data.player.environment.use_v2_ship_panel = false;
@@ -159,12 +163,32 @@ async function interceptRequestsForTarget(target) {
 }
 
 (async function main(){
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: null,
+  let facebookLogin = 0;
+
+  let browser;
+
+  browser = await puppeteer.connect({
+    browserURL: 'http://127.0.0.1:9222',
     //devtools: true,
-    args: args
+    defaultViewport: null
+  }).catch(function (error) {
+    console.log(error);
+
+    console.log("Please start google chrome with:");
+    console.log("google-chrome --remote-debugging-port=9222");
+
+    facebookLogin = 1;
   });
+
+  if (facebookLogin === 1) {
+    console.log("Starting browser...");
+    browser = await puppeteer.launch({
+      headless: false,
+      defaultViewport: null,
+      //devtools: true,
+      args: args
+    });
+  }
 
   const page = (await browser.pages())[0];
 
@@ -178,14 +202,18 @@ async function interceptRequestsForTarget(target) {
 
   //await page.goto(url);
 
-  await page.goto('https://facebook.com');
-  await page.type('#email', facebooksec.login);
-  await page.type('#pass', facebooksec.password);
+  if (facebookLogin === 1) {
+    await page.goto('https://facebook.com');
+    await page.type('#email', facebooksec.login);
+    await page.type('#pass', facebooksec.password);
 
-  await page.click('[type="submit"]');
-  await page.waitForNavigation();
+    await page.click('[type="submit"]');
+    await page.waitForNavigation();
 
-  //await page.goto("https://stt.disruptorbeam.com/users/auth/dbid");
-  await page.goto("https://stt.disruptorbeam.com/users/auth/facebook");
+    await page.goto("https://stt.disruptorbeam.com/users/auth/facebook");
+    //await page.goto("https://stt.disruptorbeam.com/users/auth/dbid");
+  } else {
+    await page.goto("https://stt.disruptorbeam.com");
+  }
 
 })()
